@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSort AI - AI Powered Waste Classification & Recycling Assistant</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #059669 0%, #10b981 50%, #047857 100%); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl shadow-lg shadow-emerald-600/30">
+                        <i class="fa-solid fa-recycle"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text text-transparent">EcoSort AI</span>
+                        <span class="block text-[10px] font-semibold text-emerald-600 tracking-wider">CEP INITIATIVE</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center gap-6 font-medium text-slate-600 text-sm">
+                    <a href="#scanner" class="hover:text-emerald-600 transition">AI Scanner</a>
+                    <a href="#guide" class="hover:text-emerald-600 transition">Bin Guide</a>
+                    <a href="#game" class="hover:text-emerald-600 transition">Sorting Game</a>
+                    <a href="#facilities" class="hover:text-emerald-600 transition">Recycling Hubs</a>
+                    <a href="#leaderboard" class="hover:text-emerald-600 transition">Leaderboard</a>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-seedling text-emerald-500"></i>
+                        <span id="user-score">850</span> 🌱 Eco Points
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="gradient-bg text-white py-12 px-4 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto text-center relative z-10">
+            <span class="bg-white/20 text-white text-xs px-3.5 py-1.5 rounded-full font-semibold uppercase tracking-wider mb-4 inline-block backdrop-blur-sm">
+                🎓 St. Gonsalo Garcia College CEP Project
+            </span>
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight mb-4">
+                AI-Powered Waste Classification & Recycling Assistant
+            </h1>
+            <p class="text-emerald-100 text-sm md:text-base max-w-2xl mx-auto mb-8">
+                Empowering Vasai-Virar communities and school students to segregate waste smartly, reduce landfill footprint, and manage e-waste responsibly.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#scanner" class="bg-white text-emerald-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-emerald-50 transition flex items-center gap-2">
+                    <i class="fa-solid fa-camera"></i> Test AI Scanner
+                </a>
+                <a href="#game" class="bg-emerald-800/50 hover:bg-emerald-800/70 border border-white/20 text-white font-bold px-6 py-3 rounded-xl backdrop-blur-sm transition flex items-center gap-2">
+                    <i class="fa-solid fa-gamepad"></i> Play Waste Sorting Game
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-12 flex-1">
+
+        <!-- Section 1: AI Scanner -->
+        <section id="scanner" class="scroll-mt-20">
+            <div class="text-center max-w-2xl mx-auto mb-8">
+                <h2 class="text-2xl font-bold text-slate-900">📸 1. AI Waste Image Scanner</h2>
+                <p class="text-slate-600 text-sm">Upload or select a photo of waste items to instantly classify category, bin color, and disposal instructions.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-start">
+                <!-- Upload Box -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <!-- HIDDEN FILE INPUT -->
+                    <input type="file" id="file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+                    
+                    <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-emerald-500 transition cursor-pointer bg-slate-50/50" id="drop-zone" onclick="triggerFileInput()">
+                        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl" id="upload-icon-container">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 mb-1" id="upload-status-title">Upload Waste Photograph</h3>
+                        <p class="text-xs text-slate-500 mb-4" id="upload-status-desc">Click here to browse image from computer (PNG, JPG up to 5MB)</p>
+                        <button type="button" class="bg-emerald-600 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-emerald-700 transition pointer-events-none">
+                            Choose Image File
+                        </button>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="text-xs font-semibold text-slate-500 mb-2">Or try Quick Demo Samples:</p>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="simulateScan('plastic')" class="p-2 border border-slate-200 rounded-lg hover:border-emerald-500 text-xs font-medium text-slate-700 bg-slate-50">🥤 Plastic Bottle</button>
+                            <button onclick="simulateScan('ewaste')" class="p-2 border border-slate-200 rounded-lg hover:border-emerald-500 text-xs font-medium text-slate-700 bg-slate-50">📱 Old Phone</button>
+                            <button onclick="simulateScan('battery')" class="p-2 border border-slate-200 rounded-lg hover:border-emerald-500 text-xs font-medium text-slate-700 bg-slate-50">🔋 Battery</button>
+                            <button onclick="simulateScan('organic')" class="p-2 border border-slate-200 rounded-lg hover:border-emerald-500 text-xs font-medium text-slate-700 bg-slate-50">🍌 Banana Peel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detection Result Output -->
+                <div id="scan-result-card" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-100">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-robot text-emerald-600"></i> AI Detection Result
+                        </h3>
+                        <span id="confidence-tag" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                            AI Confidence: 94%
+                        </span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 block uppercase">Detected Item</span>
+                            <p id="res-item" class="text-lg font-bold text-slate-800">Plastic Water Bottle</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-3 bg-slate-50 rounded-xl">
+                                <span class="text-xs font-semibold text-slate-400 block">Category</span>
+                                <p id="res-category" class="font-bold text-blue-600">🟡 Recyclable Plastic</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 rounded-xl">
+                                <span class="text-xs font-semibold text-slate-400 block">Recommended Bin</span>
+                                <p id="res-bin" class="font-bold text-blue-700">🔵 Blue Dry Waste Bin</p>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                            <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">♻️ Recommended Action</span>
+                            <p id="res-action" class="text-sm text-emerald-900 font-medium">
+                                Empty liquids completely, rinse with clean water, crush bottle to save space, and place into dry recyclable bin.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Smart Bin Guide -->
+        <section id="guide" class="scroll-mt-20">
+            <div class="text-center max-w-2xl mx-auto mb-8">
+                <h2 class="text-2xl font-bold text-slate-900">🗑️ 4. Smart Bin & Waste Segregation Guide</h2>
+                <p class="text-slate-600 text-sm">Visual color-coded guide for households and school students.</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl">
+                    <div class="w-10 h-10 bg-emerald-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-3">🟢</div>
+                    <h3 class="font-bold text-emerald-900 mb-1">Organic / Wet Waste</h3>
+                    <p class="text-xs text-emerald-700 mb-2">Food scraps, banana peels, garden leaves, tea bags.</p>
+                    <span class="text-[11px] font-semibold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded">Destination: Home Compost</span>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 p-5 rounded-2xl">
+                    <div class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-3">🔵</div>
+                    <h3 class="font-bold text-blue-900 mb-1">Dry Recyclable Waste</h3>
+                    <p class="text-xs text-blue-700 mb-2">Plastic bottles, cardboard, paper, tin cans, glass jars.</p>
+                    <span class="text-[11px] font-semibold bg-blue-200 text-blue-800 px-2 py-0.5 rounded">Destination: Municipal Recycler</span>
+                </div>
+
+                <div class="bg-purple-50 border border-purple-200 p-5 rounded-2xl">
+                    <div class="w-10 h-10 bg-purple-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-3">🔴</div>
+                    <h3 class="font-bold text-purple-900 mb-1">Electronic Waste (E-Waste)</h3>
+                    <p class="text-xs text-purple-700 mb-2">Old phones, chargers, laptop wires, broken PCBs.</p>
+                    <span class="text-[11px] font-semibold bg-purple-200 text-purple-800 px-2 py-0.5 rounded">Destination: Authorized Facility</span>
+                </div>
+
+                <div class="bg-rose-50 border border-rose-200 p-5 rounded-2xl">
+                    <div class="w-10 h-10 bg-rose-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-3">⚠️</div>
+                    <h3 class="font-bold text-rose-900 mb-1">Hazardous Household</h3>
+                    <p class="text-xs text-rose-700 mb-2">Lithium batteries, paint cans, chemicals, expired meds.</p>
+                    <span class="text-[11px] font-semibold bg-rose-200 text-rose-800 px-2 py-0.5 rounded">Destination: Hazardous Collection</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Waste Sorting Game -->
+        <section id="game" class="scroll-mt-20">
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-8 rounded-3xl shadow-xl">
+                <div class="max-w-3xl mx-auto text-center">
+                    <span class="bg-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full font-bold uppercase mb-2 inline-block">🎮 5. Interactive Sorting Challenge</span>
+                    <h2 class="text-2xl font-bold mb-2">Help Sort The Waste Item!</h2>
+                    <p class="text-slate-300 text-sm mb-6">Select the correct bin for the item displayed to earn +10 Eco Points 🌱.</p>
+
+                    <!-- Active Item Card -->
+                    <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl max-w-sm mx-auto mb-6 shadow-lg">
+                        <div class="text-4xl mb-2" id="game-emoji">🔋</div>
+                        <h3 class="text-xl font-bold text-white mb-1" id="game-item-name">Used Lithium Battery</h3>
+                        <p class="text-xs text-slate-400">Where should this item be disposed?</p>
+                    </div>
+
+                    <!-- Bin Selection Buttons -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <button onclick="playGame('organic')" class="p-3 bg-slate-800 hover:bg-emerald-600 border border-slate-700 rounded-xl transition text-xs font-bold text-white flex flex-col items-center gap-1">
+                            <span>🟢 Organic</span>
+                        </button>
+                        <button onclick="playGame('dry')" class="p-3 bg-slate-800 hover:bg-blue-600 border border-slate-700 rounded-xl transition text-xs font-bold text-white flex flex-col items-center gap-1">
+                            <span>🔵 Dry Recyclable</span>
+                        </button>
+                        <button onclick="playGame('ewaste')" class="p-3 bg-slate-800 hover:bg-purple-600 border border-slate-700 rounded-xl transition text-xs font-bold text-white flex flex-col items-center gap-1">
+                            <span>🔴 E-Waste</span>
+                        </button>
+                        <button onclick="playGame('hazardous')" class="p-3 bg-slate-800 hover:bg-rose-600 border border-slate-700 rounded-xl transition text-xs font-bold text-white flex flex-col items-center gap-1">
+                            <span>⚠️ Hazardous</span>
+                        </button>
+                    </div>
+
+                    <!-- Game Feedback Banner -->
+                    <div id="game-feedback" class="mt-4 p-3 rounded-xl text-xs font-bold hidden"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Facilities & Leaderboard Grid -->
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Facilities Nearby -->
+            <section id="facilities" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-location-dot text-emerald-600"></i> 📍 Authorized E-Waste & Recycling Hubs (Vasai Region)
+                </h3>
+                <div class="space-y-3">
+                    <div class="p-3 border border-slate-100 rounded-xl bg-slate-50">
+                        <h4 class="font-bold text-sm text-slate-800">Vasai Municipal E-Waste Collection Point</h4>
+                        <p class="text-xs text-slate-500">Near VVMC Office, Vasai West • Open Mon-Sat</p>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded mt-1 inline-block">Authorized Center</span>
+                    </div>
+                    <div class="p-3 border border-slate-100 rounded-xl bg-slate-50">
+                        <h4 class="font-bold text-sm text-slate-800">EcoRecycle India Centre</h4>
+                        <p class="text-xs text-slate-500">GIDC Industrial Zone, Vasai East • Accepts Heavy Electronics</p>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded mt-1 inline-block">Recycling Partner</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Leaderboard -->
+            <section id="leaderboard" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-500"></i> 🏆 School Student Eco Leaderboard
+                </h3>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between p-2.5 bg-amber-50 rounded-xl border border-amber-200">
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-amber-600 text-sm">#1</span>
+                            <span class="font-bold text-slate-800 text-sm">Aditya Paswan (You)</span>
+                        </div>
+                        <span class="font-bold text-emerald-600 text-xs">850 🌱</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-slate-400 text-sm">#2</span>
+                            <span class="font-medium text-slate-700 text-sm">Rahul Sharma</span>
+                        </div>
+                        <span class="font-bold text-slate-600 text-xs">720 🌱</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-slate-400 text-sm">#3</span>
+                            <span class="font-medium text-slate-700 text-sm">Priya Patel</span>
+                        </div>
+                        <span class="font-bold text-slate-600 text-xs">680 🌱</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p><strong>EcoSort AI</strong> — Community Engagement Project (CEP) Submitted to <strong>St. Gonsalo Garcia College, Vasai</strong></p>
+            <p>Guided by: <strong>Prof. Supriya Irkar</strong> | HOD: <strong>Prof. Olivia Dias</strong> | Principal: <strong>Dr. Somnath Vibhute</strong></p>
+        </div>
+    </footer>
+
+    <!-- Interactive JavaScript Logic -->
+    <script>
+        // Sample Scan Datasets
+        const dataset = {
+            plastic: {
+                item: "Plastic Water Bottle",
+                category: "🟡 Recyclable Plastic",
+                bin: "🔵 Blue Dry Waste Bin",
+                action: "Empty liquids completely, rinse with clean water, crush bottle to save space, and place into dry recyclable bin.",
+                confidence: "96%"
+            },
+            ewaste: {
+                item: "Old Smartphone / Tablet",
+                category: "🔴 Electronic Waste (E-Waste)",
+                bin: "🔴 Dedicated E-Waste Collector",
+                action: "Wipe personal data. Do NOT throw into regular garbage. Hand over to authorized municipal e-waste drive.",
+                confidence: "98%"
+            },
+            battery: {
+                item: "Lithium Ion Battery",
+                category: "⚠️ Hazardous Household Waste",
+                bin: "⚠️ Special Hazardous Drop Box",
+                action: "Tape terminals to avoid short-circuit. Store in cool dry place until collection drive.",
+                confidence: "94%"
+            },
+            organic: {
+                item: "Fresh Banana Peel",
+                category: "🟢 Biodegradable Organic Waste",
+                bin: "🟢 Green Wet Waste Bin",
+                action: "Dispose into green wet waste bin or home composting pit. Excellent for soil enrichment.",
+                confidence: "99%"
+            }
+        };
+
+        function triggerFileInput() {
+            document.getElementById('file-input').click();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if(file) {
+                document.getElementById('upload-status-title').innerText = "Selected: " + file.name;
+                document.getElementById('upload-status-desc').innerText = "Analyzing waste features via AI model...";
+                
+                // Randomly pick one category demo result for uploaded image
+                const keys = Object.keys(dataset);
+                const randomKey = keys[Math.floor(Math.random() * keys.length)];
+                
+                setTimeout(() => {
+                    simulateScan(randomKey);
+                    document.getElementById('upload-status-title').innerText = "Upload Waste Photograph";
+                    document.getElementById('upload-status-desc').innerText = "Click here to browse image from computer (PNG, JPG up to 5MB)";
+                }, 800);
+            }
+        }
+
+        function simulateScan(type) {
+            const data = dataset[type];
+            document.getElementById('res-item').innerText = data.item;
+            document.getElementById('res-category').innerText = data.category;
+            document.getElementById('res-bin').innerText = data.bin;
+            document.getElementById('res-action').innerText = data.action;
+            document.getElementById('confidence-tag').innerText = "AI Confidence: " + data.confidence;
+        }
+
+        // Game Logic
+        let currentPoints = 850;
+        const gameItems = [
+            { name: "Used Lithium Battery", emoji: "🔋", correct: "hazardous" },
+            { name: "Broken Glass Bottle", emoji: "🍾", correct: "dry" },
+            { name: "Leftover Food Scraps", emoji: "🍕", correct: "organic" },
+            { name: "Laptop Charger Wire", emoji: "🔌", correct: "ewaste" }
+        ];
+        let gameIndex = 0;
+
+        function playGame(selectedBin) {
+            const current = gameItems[gameIndex];
+            const feedback = document.getElementById('game-feedback');
+            feedback.classList.remove('hidden', 'bg-emerald-500/20', 'text-emerald-300', 'bg-rose-500/20', 'text-rose-300');
+
+            if(selectedBin === current.correct) {
+                currentPoints += 10;
+                document.getElementById('user-score').innerText = currentPoints;
+                feedback.classList.add('bg-emerald-500/20', 'text-emerald-300');
+                feedback.innerText = "✅ Correct! +10 Eco Points Earned 🌱";
+            } else {
+                feedback.classList.add('bg-rose-500/20', 'text-rose-300');
+                feedback.innerText = "❌ Incorrect bin! Try analyzing the material safety guidelines.";
+            }
+
+            // Next Item
+            gameIndex = (gameIndex + 1) % gameItems.length;
+            setTimeout(() => {
+                document.getElementById('game-emoji').innerText = gameItems[gameIndex].emoji;
+                document.getElementById('game-item-name').innerText = gameItems[gameIndex].name;
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
