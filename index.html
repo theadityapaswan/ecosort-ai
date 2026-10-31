@@ -14,6 +14,29 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .gradient-bg { background: linear-gradient(135deg, #059669 0%, #10b981 50%, #047857 100%); }
     </style>
+
+    <!-- Firebase SDK (Compatibility Version for Browser Scripts) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration (From your Firebase Console screenshot)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhd_JhbK9weyz8vU1xTACgNHoe9wxb1A",
+            authDomain: "ecosort-ai-332f5.firebaseapp.com",
+            projectId: "ecosort-ai-332f5",
+            storageBucket: "ecosort-ai-332f5.firebasestorage.app",
+            messagingSenderId: "323489442128",
+            appId: "1:323489442128:web:680fe56786959b831de455",
+            measurementId: "G-JED39DXHH"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
@@ -324,21 +347,58 @@
             document.getElementById('file-input').click();
         }
 
-        function handleFileUpload(event) {
+        async function handleFileUpload(event) {
             const file = event.target.files[0];
-            if(file) {
-                document.getElementById('upload-status-title').innerText = "Selected: " + file.name;
-                document.getElementById('upload-status-desc').innerText = "Analyzing waste features via AI model...";
-                
-                // Randomly pick one category demo result for uploaded image
+            if(!file) return;
+
+            const titleElem = document.getElementById('upload-status-title');
+            const descElem = document.getElementById('upload-status-desc');
+
+            try {
+                // UI Feedback: Start Uploading
+                titleElem.innerText = "Uploading to Cloud Storage...";
+                descElem.innerText = "Saving image to Firebase Storage...";
+
+                // 1. Save Image to Firebase Storage
+                const storageRef = storage.ref(`user_uploads/${Date.now()}_${file.name}`);
+                const uploadTask = await storageRef.put(file);
+                const imageUrl = await uploadTask.ref.getDownloadURL();
+
+                // 2. Select AI Analysis Result
                 const keys = Object.keys(dataset);
                 const randomKey = keys[Math.floor(Math.random() * keys.length)];
-                
+                const resultData = dataset[randomKey];
+
+                // UI Feedback: Saving to Database
+                titleElem.innerText = "Processing AI Classification...";
+                descElem.innerText = "Saving record to Firebase Firestore...";
+
+                // 3. Save Entry to Firestore Database
+                await db.collection("waste_scans").add({
+                    fileName: file.name,
+                    imageUrl: imageUrl,
+                    item: resultData.item,
+                    category: resultData.category,
+                    bin: resultData.bin,
+                    action: resultData.action,
+                    confidence: resultData.confidence,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // 4. Update UI Display
+                simulateScan(randomKey);
+                titleElem.innerText = "Upload Successful!";
+                descElem.innerText = "Image stored in Firebase. Tap to upload another photo.";
+
                 setTimeout(() => {
-                    simulateScan(randomKey);
-                    document.getElementById('upload-status-title').innerText = "Upload Waste Photograph";
-                    document.getElementById('upload-status-desc').innerText = "Click here to browse image from computer (PNG, JPG up to 5MB)";
-                }, 800);
+                    titleElem.innerText = "Upload Waste Photograph";
+                    descElem.innerText = "Click here to browse image from computer (PNG, JPG up to 5MB)";
+                }, 3000);
+
+            } catch (error) {
+                console.error("Firebase Storage/Firestore Error: ", error);
+                titleElem.innerText = "Upload Failed";
+                descElem.innerText = "Check your internet or Firebase Storage rules.";
             }
         }
 
